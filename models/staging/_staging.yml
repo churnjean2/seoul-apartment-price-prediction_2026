@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: stg_transactions
+    description: Reported trades with English column names and typed values
+    columns:
+      - name: contract_date
+        tests: [not_null]
+      - name: price_10k_krw
+        tests: [not_null]
+      - name: floor_area_m2
+        tests: [not_null]
+      - name: bjd_code
+        tests: [not_null]
+
+  - name: stg_building_register
+    description: Building register records with English column names and typed values
+    columns:
+      - name: register_id
+        tests: [not_null, unique]
+      - name: bjd_code
+        tests:
+          - not_null:
+              config:
+                severity: warn   # known gap in the source; filled downstream in int_building_register_coded

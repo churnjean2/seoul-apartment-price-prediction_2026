@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: int_dong_code_lookup
+    description: One row per district + dong name with its legal dong code
+    columns:
+      - name: name_key
+        tests: [not_null, unique]   # one name must map to exactly one code
+
+  - name: int_building_register_coded
+    description: Building register with dong codes filled from names where missing
+    columns:
+      - name: register_id
+        tests: [not_null, unique]   # the fill join must not duplicate buildings
+      - name: bjd_code
+        tests:
+          - not_null:
+              config:
+                severity: warn      # buildings in dongs with no trades stay missing
