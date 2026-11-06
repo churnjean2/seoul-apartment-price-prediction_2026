@@ -1,0 +1,12 @@
+name: seoul_apt
+version: "1.0.0"
+profile: seoul_apt
+
+model-paths: ["models"]
+
+models:
+  seoul_apt:
+    staging:
+      +materialized: view   # cheap, always reflects the latest raw data
+    marts:
+      +materialized: table  # stored, because the model and API read it repeatedly
