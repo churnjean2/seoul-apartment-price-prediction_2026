@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: Manually downloaded CSVs loaded by src/load_raw.py (see docs/data_sources.md)
+    tables:
+      - name: transactions
+        description: Seoul real estate transactions (all building types), one row per reported trade
+      - name: building_register
+        description: Building register recap title section (총괄표제부), one row per complex
