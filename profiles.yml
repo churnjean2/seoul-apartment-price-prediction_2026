@@ -3,5 +3,5 @@ seoul_apt:
   outputs:
     dev:
       type: duckdb
-      # Read from an environment variable so the same project runs in Colab and in Docker
-      path: "{{ env_var('DUCKDB_PATH', '/content/drive/MyDrive/apt_price_2026/warehouse.duckdb') }}"
+      # Read from an environment variable so the same project runs locally and in Docker
+      path: "{{ env_var('DUCKDB_PATH', 'data/warehouse.duckdb') }}"
