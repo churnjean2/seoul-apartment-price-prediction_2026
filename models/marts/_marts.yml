@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: mart_training_trades
+    description: >
+      One row per apartment trade usable for modelling (matched, not cancelled,
+      not a presale right, not a direct deal). Target is price_per_m2_10k.
+    columns:
+      - name: trade_id
+        tests: [not_null, unique]
+      - name: register_id
+        tests: [not_null]
+      - name: price_per_m2_10k
+        tests: [not_null]
+      - name: contract_month
+        tests: [not_null]
