@@ -1,0 +1,29 @@
+{
+  "trained_at": "2026-11-07T22:31:59+00:00",
+  "rows": 153884,
+  "data_until": "2026-11-04",
+  "target": "price_per_m2_10k",
+  "numeric": [
+    "floor_area_m2",
+    "floor",
+    "building_age",
+    "households",
+    "parking_per_household",
+    "passenger_elevators",
+    "floor_area_ratio",
+    "building_coverage_ratio",
+    "x_coord",
+    "y_coord"
+  ],
+  "categorical": [
+    "district_name",
+    "energy_grade",
+    "green_building_grade"
+  ],
+  "test_split_date": "2026-01-01",
+  "test_metrics": {
+    "r2": 0.831,
+    "mae": 291.5,
+    "mape": 15.6
+  }
+}

@@ -11,10 +11,15 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from xgboost import XGBRegressor
 from sklearn.compose import TransformedTargetRegressor
+import json
+from datetime import datetime, timezone
+
+import joblib
 
 DB_PATH = Path(os.environ.get("DUCKDB_PATH", "data/warehouse.duckdb"))
 SPLIT_DATE = "2026-01-01"  # train: before this date, test: on/after
 SEED = 42
+MODEL_DIR = Path("artifacts")
 
 NUMERIC = [
     "floor_area_m2", "floor", "building_age", "households",
@@ -38,6 +43,7 @@ def report(name, y_true, y_pred):
     mape = np.mean(np.abs(y_true - y_pred) / y_true) * 100
     r2 = r2_score(y_true, y_pred)
     print(f"{name:<28} R2={r2:6.3f}  MAE={mae:7.1f}  MAPE={mape:5.1f}%")
+    return {"r2": round(r2, 3), "mae": round(mae, 1), "mape": round(mape, 1)}
 
 
 def main():
@@ -78,7 +84,36 @@ def main():
         )),
     ])
     model.fit(X_train, y_train)
-    report("XGBoost (time split)", y_test, model.predict(X_test))
+    test_metrics = report("XGBoost (time split)", y_test, model.predict(X_test))
+
+    # Final model: refit on ALL rows so it knows the latest prices.
+    # The reported score is still the time-split score above.
+    features = NUMERIC + CATEGORICAL
+    final = build_model()
+    final.fit(df[features], df[TARGET])
+
+    MODEL_DIR.mkdir(exist_ok=True)
+    joblib.dump(final, MODEL_DIR / "model.joblib")
+
+    # Metadata travels with the model: what it expects and how good it is
+    meta = {
+        "trained_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "rows": len(df),
+        "data_until": df["contract_date"].max().date().isoformat(),
+        "target": TARGET,
+        "numeric": NUMERIC,
+        "categorical": CATEGORICAL,
+        "test_split_date": SPLIT_DATE,
+        "test_metrics": test_metrics,
+    }
+    (MODEL_DIR / "model_meta.json").write_text(json.dumps(meta, indent=2))
+
+    # Sanity check: reload the saved file and predict one row
+    reloaded = joblib.load(MODEL_DIR / "model.joblib")
+    sample = X_test.iloc[[0]]
+    print(f"saved -> {MODEL_DIR / 'model.joblib'}")
+    print(f"check: predicted={reloaded.predict(sample)[0]:.1f}  "
+          f"actual={y_test.iloc[0]:.1f}")
 
 def build_model(numeric=NUMERIC, categorical=CATEGORICAL, log_target=False):
     # Imputation and encoding are fitted inside the pipeline (train only)
