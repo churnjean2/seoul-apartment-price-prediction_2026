@@ -1,6 +1,10 @@
 -- Purpose : How many trades survive each filter on the way to the training table?
--- Result  :
--- Decision:
+-- Result: 198,179 apartment trades -> 153,884 training rows (77.6% kept).
+--         Lost 30,549 at the register match (small complexes with no
+--         multi-family record), 9,084 cancelled, 219 presale rights,
+--         4,443 direct deals.
+-- Decision: Keep every filter. Each step removes rows that do not reflect
+--           a normal market price, and the funnel documents exactly why.
 -- SQL     : Several COUNT(*) FILTER columns in one pass build a funnel.
 
 with t as (

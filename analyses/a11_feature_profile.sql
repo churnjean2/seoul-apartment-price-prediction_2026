@@ -1,7 +1,14 @@
 -- Purpose : Rows, typical price and missing-value rates per contract year,
 --           before choosing the time split and the feature list.
--- Result  :
--- Decision:
+-- Result: Trades per contract year: 665 (2023), 45,311 (2024),
+--         63,907 (2025), 44,001 (2026, partial year).
+--         Median price per m2 (10k KRW): 1,267 / 1,389 / 1,472 / 1,362.
+--         Households are null for under 1% of rows. Energy and green
+--         grades are null for 85-90% of rows (no certification).
+-- Decision: Encode missing energy/green grades as 'none' instead of
+--           imputing, because an uncertified building is a real category.
+--           Use a time-based split (train up to 2025, test on 2026)
+--           since prices shift from year to year.
 -- SQL     : AVG(CASE WHEN col IS NULL ...) gives a null rate per group.
 
 select
