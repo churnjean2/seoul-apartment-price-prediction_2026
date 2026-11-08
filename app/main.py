@@ -2,12 +2,12 @@ import json
 import os
 from pathlib import Path
 from typing import Optional
-
 import joblib
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
+from fastapi.responses import RedirectResponse
 
 MODEL_DIR = Path(os.environ.get("MODEL_DIR", "artifacts"))
 
@@ -55,6 +55,10 @@ def to_frame(apt: Apartment) -> pd.DataFrame:
     row[CATEGORICAL] = cat.where(cat.notna(), np.nan)
     return row[NUMERIC + CATEGORICAL]
 
+@app.get("/", include_in_schema=False)
+def root():
+    # Send visitors straight to the interactive docs
+    return RedirectResponse(url="/docs")
 
 @app.get("/health")
 def health():
