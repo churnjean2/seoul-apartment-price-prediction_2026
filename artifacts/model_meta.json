@@ -1,5 +1,5 @@
 {
-  "trained_at": "2026-11-07T22:31:59+00:00",
+  "trained_at": "2026-11-08T17:45:19+00:00",
   "rows": 153884,
   "data_until": "2026-11-04",
   "target": "price_per_m2_10k",
@@ -23,7 +23,7 @@
   "test_split_date": "2026-01-01",
   "test_metrics": {
     "r2": 0.831,
-    "mae": 291.5,
-    "mape": 15.6
+    "mae": 291.9,
+    "mape": 15.7
   }
 }
