@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   retrain:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       DUCKDB_PATH: data/warehouse.duckdb
       RAW_DATA_DIR: data/raw
@@ -17,10 +17,10 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
           cache: pip
