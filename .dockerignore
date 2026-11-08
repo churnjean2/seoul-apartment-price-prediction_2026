@@ -1,0 +1,11 @@
+.venv/
+.git/
+data/
+target/
+logs/
+models/
+analyses/
+tests/
+__pycache__/
+*.duckdb
+.env
