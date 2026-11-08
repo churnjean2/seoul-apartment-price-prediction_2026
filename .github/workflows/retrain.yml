@@ -1,0 +1,56 @@
+name: Retrain model
+
+on:
+  workflow_dispatch:   # "Run workflow" button in the Actions tab
+  # A monthly schedule is added in step 10-3
+
+permissions:
+  contents: write      # allow the job to commit the new model
+
+jobs:
+  retrain:
+    runs-on: ubuntu-latest
+    env:
+      DUCKDB_PATH: data/warehouse.duckdb
+      RAW_DATA_DIR: data/raw
+      DBT_PROFILES_DIR: .
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Download raw data snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p data/raw
+          gh release download data-v1 --pattern raw_snapshot.zip --dir data
+          unzip -o data/raw_snapshot.zip -d data/raw
+
+      - name: Load raw tables
+        run: python src/load_raw.py
+
+      # dbt build = run models + run tests. A failing test stops the job,
+      # so bad data never reaches training or deployment.
+      - name: Build and test dbt models
+        run: dbt build
+
+      - name: Retrain and save model
+        run: python src/train_baseline.py
+
+      - name: Commit new model
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add artifacts/
+          git diff --cached --quiet || git commit -m "Retrain model (automated)"
+          git push
