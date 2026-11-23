@@ -14,7 +14,7 @@ with trades as (
 ),
 
 lots as (
-    select * from {{ ref('int_register_lots') }},
+    select * from {{ ref('int_register_lots') }}
 ),
 
 main_lots as (
@@ -25,7 +25,7 @@ select
     t.*,
     -- Fall back to the main-lot match only when the exact parcel is absent
     coalesce(
-        l.register_id,  -- main-lot fallback rejected: only 7.5% construction-year agreement
+        l.register_id  -- main-lot fallback rejected: only 7.5% construction-year agreement
     ) as register_id,
     case
         when t.main_lot_no is null                         then 'no_lot_number'

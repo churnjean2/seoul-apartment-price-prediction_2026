@@ -5,12 +5,12 @@ with buildings as (
     select * from {{ ref('stg_building_register') }}
 ),
 
-lookup as (
+dong_lookup as (
     select * from {{ ref('int_dong_code_lookup') }}
 )
 
 select
-    b.* exclude (bjd_code),
+    b.{{ star_except(['bjd_code']) }},
     coalesce(b.bjd_code, l.bjd_code) as bjd_code,
     case
         when b.bjd_code is not null then 'register'
@@ -18,7 +18,7 @@ select
         else 'missing'
     end as bjd_code_source
 from buildings as b
-left join lookup as l
+left join dong_lookup as l
     on  b.bjd_code is null
     and b.district_name = l.district_name
     and b.dong_name     = l.dong_name

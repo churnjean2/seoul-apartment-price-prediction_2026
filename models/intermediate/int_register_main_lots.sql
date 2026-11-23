@@ -7,10 +7,10 @@ select
     bjd_code || '-' || main_lot_no                      as main_lot_key,
     bjd_code,
     main_lot_no,
-    count(*) filter (where main_use = '공동주택')        as n_multi_family,
+    sum(case when main_use = '공동주택' then 1 else 0 end)  as n_multi_family,
     case
-        when count(*) filter (where main_use = '공동주택') = 1
-        then any_value(register_id) filter (where main_use = '공동주택')
+        when sum(case when main_use = '공동주택' then 1 else 0 end) = 1
+        then max(case when main_use = '공동주택' then register_id end)
     end                                                 as register_id
 from {{ ref('int_building_register_coded') }}
 where bjd_code is not null

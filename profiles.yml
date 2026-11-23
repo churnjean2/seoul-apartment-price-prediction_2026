@@ -5,3 +5,13 @@ seoul_apt:
       type: duckdb
       # Read from an environment variable so the same project runs locally and in Docker
       path: "{{ env_var('DUCKDB_PATH', 'data/warehouse.duckdb') }}"
+    prod:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('GCP_PROJECT', 'seoul-apt-pipeline') }}"
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS', '') }}"
+      dataset: analytics
+      location: europe-west2
+      threads: 4
+      maximum_bytes_billed: 1000000000   # cost guard: 1 GB per query
+      job_execution_timeout_seconds: 300

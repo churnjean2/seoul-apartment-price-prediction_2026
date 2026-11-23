@@ -21,7 +21,7 @@ select
     t.trade_id,
     t.register_id,
     t.contract_date,
-    strftime(t.contract_date, '%Y-%m')                     as contract_month,
+    {{ year_month('t.contract_date') }}                     as contract_month,
 
     -- target
     t.price_10k_krw,
@@ -33,7 +33,7 @@ select
     t.floor_area_m2,
     t.floor,
     t.built_year,
-    year(t.contract_date) - t.built_year                   as building_age,
+    extract(year from t.contract_date) - t.built_year      as building_age,
 
     -- building-level features
     b.households,
